@@ -42,8 +42,9 @@ const FitnessProfile = mongoose.Schema({
         type: Number
     },
     photos: {
-        type: [String], // Cloudinary URLs, added later
-        default: []
+        baseline: [{ angle: String, url: String }],
+        previous: [{ angle: String, url: String }],
+        current: [{ angle: String, url: String }]
     },
     currentTier: {
         type: Number,
