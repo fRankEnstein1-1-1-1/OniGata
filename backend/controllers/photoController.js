@@ -1,6 +1,7 @@
 const streamifier = require("streamifier");
 const cloudinary = require("../config/cloudinary");
 const FitnessProfile = require("../models/FitnessProfile");
+const { comparePhotos } = require("../services/geminiService");
 
 const uploadToCloudinary = (buffer) => {
     return new Promise((resolve, reject) => {
@@ -15,12 +16,11 @@ const uploadToCloudinary = (buffer) => {
     });
 };
 
-// placeholder — real implementation lands in Phase 6
-const compareWithGemini = async (referenceSet, currentSet) => {
-    console.log("Gemini comparison stub — reference:", referenceSet, "current:", currentSet);
-    return { note: "AI comparison not yet implemented" };
-};
 
+
+const compareWithGemini = async (referenceSet, currentSet, goal) => {
+    return await comparePhotos(referenceSet, currentSet, goal);
+};
 // POST /api/photos/upload
 const uploadPhotos = async (req, res) => {
     try {
@@ -57,7 +57,8 @@ const uploadPhotos = async (req, res) => {
             ? profile.photos.previous
             : profile.photos.baseline;
 
-        const comparison = await compareWithGemini(referenceSet, uploadedSet);
+        const comparison = await compareWithGemini(referenceSet, uploadedSet, profile.target);
+        profile.progressNotes.push(comparison);
 
         // only rotate storage after a successful comparison
         const oldPreviousUrls = profile.photos.previous.map(p => p.url);

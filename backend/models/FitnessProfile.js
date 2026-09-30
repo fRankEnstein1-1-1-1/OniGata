@@ -46,6 +46,11 @@ const FitnessProfile = mongoose.Schema({
         previous: [{ angle: String, url: String }],
         current: [{ angle: String, url: String }]
     },
+    // alongside photos field
+    progressNotes: {
+        type: [String],
+        default: []
+    },
     currentTier: {
         type: Number,
         default: 1
