@@ -7,25 +7,50 @@ const jwt = require("jsonwebtoken");
 const register = async (req, res) => {
     try {
         const { name, email, password } = req.body;
-        if (!name || !email || !password) {
-            return res.status(400).json({ message: "All fields are required !" })
-        }
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ message: "U already registerd assh*le" })
-        }
-        else {
-            const hashedpassword = await bcrypt.hash(password, 10);
-            const newUser = await User.create({ name, email, password: hashedpassword })
-        };
-        return res.status(200).json({ message: "User Registered successfully" })
-    }
-    catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: "Internal server error" })
-    }
-}
 
+        if (!name || !email || !password) {
+            return res.status(400).json({
+                message: "All fields are required!"
+            });
+        }
+
+        const existingUser = await User.findOne({ email });
+
+        if (existingUser) {
+            return res.status(400).json({
+                message: "User already registered"
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = await User.create({
+            name,
+            email,
+            password: hashedPassword
+        });
+
+        const token = jwt.sign(
+            { userId: newUser._id },
+            process.env.jwt,
+            { expiresIn: "7d" }
+        );
+
+        return res.status(201).json({
+            _id: newUser._id,
+            name: newUser.name,
+            email: newUser.email,
+            token
+        });
+
+    } catch (error) {
+        console.log(error);
+
+        return res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+};
 //login
 
 const login = async (req, res) => {
