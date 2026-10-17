@@ -24,7 +24,7 @@ const createProfile = async (req, res) => {
 
 const updateProfile = async (req, res) => {
     try {
-        const profile = await FitnessProfile.findOneAndUpdate(
+        const profile = await Fitness.findOneAndUpdate(
             { user: req.user },
             req.body,
             { new: true, runValidators: true }
@@ -32,7 +32,7 @@ const updateProfile = async (req, res) => {
         if (!profile) {
             return res.status(404).json({ message: "Profile not found" });
         }
-        res.json(profile);
+        res.status(201).json(profile);
     }
     catch (error) {
         console.log(error);
@@ -48,7 +48,7 @@ const getProfile = async (req, res) => {
         if (!profile) {
             return res.status(201).json({ message: "Please complete your profile" });
         }
-        return res.status(400).json(profile);
+        return res.status(201).json(profile);
     }
     catch (error) {
         console.log(error);

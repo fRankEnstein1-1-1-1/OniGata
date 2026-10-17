@@ -26,9 +26,10 @@ const ProfileSetup = () => {
                 injuryDetails: hasInjury ? injuryDetails : ''
             });
             alert("Profile created sucessfully!")
-            navigate('/home');
+            navigate('/photo-upload');
         } catch (err) {
             console.log(err.message)
+            alert("Profile creation failed!")
             setError(err.message || 'Profile creation failed');
         }
     };
