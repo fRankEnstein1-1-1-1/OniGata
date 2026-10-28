@@ -149,7 +149,7 @@ Goal: ${goal}
 Experience level: ${level}
 Training days available per week: ${workoutDays}
 Difficulty tier: ${tier} (already decided by the system — do not change it, only generate exercises appropriate for this tier)
-Focus muscle groups: ${focusAreas.join(", ")}
+Focus muscle groups, highest priority first: ${focusAreas.join(", ")}. Give earlier groups more weekly volume (more exercises and sets) than later ones, and cover every group at least once.
 Injury/limitations: ${hasInjury ? injuryDetails : "none"}
 
 ${previousSummary

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getProfile, updateProfile } from '../auth/profile';
+import { GOALS } from '../constants/goal';
 
 const Settings = () => {
     const [form, setForm] = useState(null);
@@ -67,7 +68,11 @@ const Settings = () => {
                 </div>
                 <div>
                     <label>Goal</label>
-                    <input name="target" value={form.target || ''} onChange={handleChange} required />
+                    <select name="target" value={form.target || GOALS[0]} onChange={handleChange}>
+                        {GOALS.map((g) => (
+                            <option key={g} value={g}>{g}</option>
+                        ))}
+                    </select>
                 </div>
                 <div>
                     <label>Workout Days per Week (max 6)</label>

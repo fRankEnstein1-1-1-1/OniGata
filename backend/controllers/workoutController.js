@@ -5,10 +5,7 @@ const { generateWorkoutPlan } = require("../services/geminiService");
 const { calculateAdherence, determineNextTier } = require("../services/progressionService");
 const WorkoutLog = require("../models/WorkoutLog")
 
-// temporary stub — real lookup table comes later, before frontend
-const FOCUS_AREAS = {
-    "V-shaped taper": ["lats", "shoulders", "chest"]
-};
+const { getFocusAreas } = require("../config/goals");
 
 const getOrCreateExercise = async (name, targetMuscle) => {
     let exercise = await Exercise.findOne({ name });
@@ -37,7 +34,7 @@ const generateNewWeek = async (req, res) => {
             weekNumber = lastPlan.weekNumber + 1;
         }
 
-        const focusAreas = FOCUS_AREAS[profile.target] || ["full body"];
+        const focusAreas = getFocusAreas(profile.target);
 
         // inside generateNewWeek, where aiPlan is generated:
         const aiPlan = await generateWorkoutPlan({

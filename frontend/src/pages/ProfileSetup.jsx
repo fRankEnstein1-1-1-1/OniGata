@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createProfile } from '../auth/profile';
-
+import { GOALS } from '../constants/goal';
 const ProfileSetup = () => {
     const navigate = useNavigate();
     const [gender, setGender] = useState('male');
@@ -60,7 +60,11 @@ const ProfileSetup = () => {
                 </div>
                 <div>
                     <label>Goal</label>
-                    <input value={target} onChange={(e) => setTarget(e.target.value)} required />
+                    <select value={target} onChange={(e) => setTarget(e.target.value)}>
+                        {GOALS.map((g) => (
+                            <option key={g} value={g}>{g}</option>
+                        ))}
+                    </select>
                 </div>
                 <div>
                     <label>Workout Days per Week (max 6)</label>

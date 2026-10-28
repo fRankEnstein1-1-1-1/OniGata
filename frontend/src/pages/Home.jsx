@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { generatePlan, getCurrentPlan, toggleLog } from '../auth/workout';
 import { Link } from 'react-router-dom';
-const TEST_MODE = false; // true = skip the 7-day wait while testing
+const TEST_MODE = true; // true = skip the 7-day wait while testing
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 // day offsets from plan start: 3 or fewer = alternate days, more = two on / one off
