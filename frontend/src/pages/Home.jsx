@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { generatePlan, getCurrentPlan, toggleLog } from '../auth/workout';
+import { getMe } from '../auth/auth';
 import { Link } from 'react-router-dom';
 import './Home.css';
 
@@ -42,6 +43,9 @@ const Home = () => {
     const [currentVidIndex, setCurrentVidIndex] = useState(0);
     const [quoteIndex, setQuoteIndex] = useState(0);
     const [tierUp, setTierUp] = useState(null); // { from, to } when promoted
+    const [userName, setUserName] = useState(() => localStorage.getItem('user_name') || '');
+    const [showWelcome, setShowWelcome] = useState(true);
+    const [welcomeFading, setWelcomeFading] = useState(false);
     const started = useRef(false);
     const videoRef = useRef(null);
 
@@ -126,6 +130,36 @@ const Home = () => {
             setLoading(false);
         })();
     }, []);
+
+    useEffect(() => {
+        if (!userName) {
+            getMe().then((user) => {
+                if (user?.name) {
+                    setUserName(user.name);
+                }
+            }).catch(() => { });
+        }
+    }, [userName]);
+
+    useEffect(() => {
+        if (!showWelcome) return;
+        const fadeTimer = setTimeout(() => {
+            setWelcomeFading(true);
+        }, 6000);
+        const hideTimer = setTimeout(() => {
+            setShowWelcome(false);
+        }, 6600);
+        return () => {
+            clearTimeout(fadeTimer);
+            clearTimeout(hideTimer);
+        };
+    }, [showWelcome]);
+
+    const handleDismissWelcome = () => {
+        playSelect();
+        setWelcomeFading(true);
+        setTimeout(() => setShowWelcome(false), 300);
+    };
 
     // Loading video: random start
     useEffect(() => {
@@ -316,6 +350,31 @@ const Home = () => {
             </header>
 
             <main className="hm-main">
+                {showWelcome && (
+                    <div className={`hm-welcome-banner ${welcomeFading ? 'fading' : ''}`} role="status">
+                        <div className="hm-welcome-left">
+                            <span className="hm-welcome-badge">
+                                <span className="hm-welcome-badge-dot" />
+                                ONI PATH
+                            </span>
+                            <div className="hm-welcome-text">
+                                <h2 className="hm-welcome-title">
+                                    {userName ? `Welcome back, ${userName}` : 'Welcome back'}
+                                </h2>
+                                <span className="hm-welcome-sub">Your training cycle is active. Stay locked in.</span>
+                            </div>
+                        </div>
+                        <button
+                            type="button"
+                            className="hm-welcome-close"
+                            onClick={handleDismissWelcome}
+                            aria-label="Dismiss notification"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                )}
+
                 {(photoDue || TEST_MODE) && (
                     <div className="hm-banner">
                         <div className="hm-banner-text">

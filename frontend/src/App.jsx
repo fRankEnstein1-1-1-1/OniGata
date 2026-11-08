@@ -12,14 +12,12 @@ import './App.css';
 
 function Homie() {
   const iframeRef = useRef(null);
-  const [isAudioActive, setIsAudioActive] = useState(false);
 
-  // Send unmute message to iframe on any user interaction (click, touch, key)
+  // Automatically ensure soundtrack is playing and unlocked on user interaction
   useEffect(() => {
     const handleUserInteraction = () => {
       try {
         iframeRef.current?.contentWindow?.postMessage('unmute', '*');
-        setIsAudioActive(true);
       } catch (err) {
         // Cross-window messaging safe-guard
       }
@@ -35,15 +33,6 @@ function Homie() {
       window.removeEventListener('keydown', handleUserInteraction);
     };
   }, []);
-
-  const toggleSoundtrack = (e) => {
-    e.stopPropagation();
-    try {
-      const nextState = !isAudioActive;
-      setIsAudioActive(nextState);
-      iframeRef.current?.contentWindow?.postMessage(nextState ? 'unmute' : 'mute', '*');
-    } catch (err) {}
-  };
 
   return (
     <div className="homie-root">
@@ -195,64 +184,6 @@ function Homie() {
           letter-spacing: 0.32em;
           color: rgba(255, 255, 255, 0.85);
           text-transform: uppercase;
-        }
-
-        /* Interactive Sound Status Pill */
-        .homie-audio-pill {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 8px 16px;
-          border-radius: 9999px;
-          background: rgba(20, 10, 12, 0.55);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          border: 1px solid rgba(220, 38, 38, 0.25);
-          font-size: 11px;
-          font-weight: 500;
-          letter-spacing: 0.18em;
-          color: rgba(255, 230, 230, 0.85);
-          text-transform: uppercase;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          outline: none;
-        }
-
-        .homie-audio-pill:hover {
-          background: rgba(220, 38, 38, 0.14);
-          border-color: rgba(220, 38, 38, 0.5);
-          box-shadow: 0 0 16px rgba(220, 38, 38, 0.2);
-          transform: translateY(-1px);
-        }
-
-        .homie-wave-bars {
-          display: flex;
-          align-items: center;
-          gap: 2.5px;
-          height: 12px;
-        }
-
-        .homie-wave-bar {
-          width: 2px;
-          height: 100%;
-          background: #ef4444;
-          border-radius: 2px;
-          animation: wavePulse 1.2s ease-in-out infinite alternate;
-        }
-
-        .homie-wave-bar:nth-child(2) {
-          animation-delay: 0.2s;
-          height: 70%;
-        }
-
-        .homie-wave-bar:nth-child(3) {
-          animation-delay: 0.4s;
-          height: 85%;
-        }
-
-        @keyframes wavePulse {
-          0% { transform: scaleY(0.35); opacity: 0.45; }
-          100% { transform: scaleY(1); opacity: 1; }
         }
 
         /* Center Content Area */
@@ -671,15 +602,9 @@ function Homie() {
       vid.play().catch(() => {});
     }
 
-    function muteSound() {
-      vid.muted = true;
-    }
-
     window.addEventListener('message', (event) => {
       if (event.data === 'unmute') {
         unmuteSound();
-      } else if (event.data === 'mute') {
-        muteSound();
       }
     });
 
@@ -709,21 +634,6 @@ function Homie() {
             <span className="homie-brand-sep" />
             <span className="homie-brand-label">OniGata</span>
           </div>
-
-          <button
-            type="button"
-            className="homie-audio-pill"
-            onClick={toggleSoundtrack}
-            title={isAudioActive ? 'Soundtrack Active (Click to Mute)' : 'Click to Unmute Soundtrack'}
-            aria-label="Toggle audio"
-          >
-            <div className="homie-wave-bars">
-              <span className="homie-wave-bar" />
-              <span className="homie-wave-bar" />
-              <span className="homie-wave-bar" />
-            </div>
-            <span>{isAudioActive ? 'Audio Active' : 'Soundtrack On'}</span>
-          </button>
         </header>
 
         {/* Central Ceremonial Temple Plate Card with Subtle Glowing Crimson Border */}

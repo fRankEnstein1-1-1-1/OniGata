@@ -9,50 +9,46 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isAudioActive, setIsAudioActive] = useState(false);
   const videoRef = useRef(null);
   const navigate = useNavigate();
 
-  // Force autoplay + loop
+  // Force autoplay + loop + soundtrack (auto-unlocks on first user gesture if browser blocks initial sound)
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    const tryPlay = async () => {
+    const startPlay = async () => {
       try {
-        video.muted = true;
+        video.muted = false;
         await video.play();
-      } catch (err) { }
+      } catch (err) {
+        // Browser blocked unmuted autoplay -> play muted, then unlock sound on first gesture
+        try {
+          video.muted = true;
+          await video.play();
+        } catch (e) { }
+      }
     };
 
-    tryPlay();
+    startPlay();
 
-    const handleInteraction = () => {
-      tryPlay();
+    const unlockSound = () => {
+      if (video) {
+        video.muted = false;
+        video.play().catch(() => { });
+      }
     };
 
-    window.addEventListener('click', handleInteraction, { once: true, passive: true });
-    window.addEventListener('touchstart', handleInteraction, { once: true, passive: true });
+    window.addEventListener('click', unlockSound, { once: true, passive: true });
+    window.addEventListener('touchstart', unlockSound, { once: true, passive: true });
+    window.addEventListener('keydown', unlockSound, { once: true, passive: true });
 
     return () => {
-      window.removeEventListener('click', handleInteraction);
-      window.removeEventListener('touchstart', handleInteraction);
+      window.removeEventListener('click', unlockSound);
+      window.removeEventListener('touchstart', unlockSound);
+      window.removeEventListener('keydown', unlockSound);
     };
   }, []);
-
-  const toggleSoundtrack = (e) => {
-    e.stopPropagation();
-    const video = videoRef.current;
-    if (!video) return;
-
-    const nextState = !isAudioActive;
-    setIsAudioActive(nextState);
-    video.muted = !nextState;
-
-    if (nextState) {
-      video.play().catch(() => { });
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -77,21 +73,6 @@ const Login = () => {
           <span className="login-brand-sep" />
           <span className="login-brand-label">OniGata</span>
         </Link>
-
-        <button
-          type="button"
-          className="login-audio-pill"
-          onClick={toggleSoundtrack}
-          title={isAudioActive ? 'Soundtrack Active (Click to Mute)' : 'Click to Unmute Soundtrack'}
-          aria-label="Toggle audio"
-        >
-          <div className="login-wave-bars">
-            <span className="login-wave-bar" />
-            <span className="login-wave-bar" />
-            <span className="login-wave-bar" />
-          </div>
-          <span>{isAudioActive ? 'Audio Active' : 'Soundtrack On'}</span>
-        </button>
       </header>
 
       {/* Main Split Layout */}

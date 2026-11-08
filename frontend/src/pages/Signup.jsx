@@ -10,54 +10,46 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isAudioActive, setIsAudioActive] = useState(false);
   const videoRef = useRef(null);
   const navigate = useNavigate();
 
-  // Force autoplay + loop as soon as the component mounts
+  // Force autoplay + loop + soundtrack (auto-unlocks on first user gesture if browser blocks initial sound)
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    const tryPlay = async () => {
+    const startPlay = async () => {
       try {
-        video.muted = true;          // browsers require muted for autoplay
+        video.muted = false;
         await video.play();
       } catch (err) {
-        // Autoplay blocked – will retry on first user interaction
+        // Browser blocked unmuted autoplay -> play muted, then unlock sound on first gesture
+        try {
+          video.muted = true;
+          await video.play();
+        } catch (e) { }
       }
     };
 
-    tryPlay();
+    startPlay();
 
-    // Retry on any user interaction (required by most browsers)
-    const handleInteraction = () => {
-      tryPlay();
+    const unlockSound = () => {
+      if (video) {
+        video.muted = false;
+        video.play().catch(() => { });
+      }
     };
 
-    window.addEventListener('click', handleInteraction, { once: true, passive: true });
-    window.addEventListener('touchstart', handleInteraction, { once: true, passive: true });
+    window.addEventListener('click', unlockSound, { once: true, passive: true });
+    window.addEventListener('touchstart', unlockSound, { once: true, passive: true });
+    window.addEventListener('keydown', unlockSound, { once: true, passive: true });
 
     return () => {
-      window.removeEventListener('click', handleInteraction);
-      window.removeEventListener('touchstart', handleInteraction);
+      window.removeEventListener('click', unlockSound);
+      window.removeEventListener('touchstart', unlockSound);
+      window.removeEventListener('keydown', unlockSound);
     };
   }, []);
-
-  const toggleSoundtrack = (e) => {
-    e.stopPropagation();
-    const video = videoRef.current;
-    if (!video) return;
-
-    const nextState = !isAudioActive;
-    setIsAudioActive(nextState);
-    video.muted = !nextState;
-
-    // Ensure it keeps playing when we unmute
-    if (nextState) {
-      video.play().catch(() => { });
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -82,21 +74,6 @@ const Signup = () => {
           <span className="signup-brand-sep" />
           <span className="signup-brand-label">OniGata</span>
         </Link>
-
-        <button
-          type="button"
-          className="signup-audio-pill"
-          onClick={toggleSoundtrack}
-          title={isAudioActive ? 'Soundtrack Active (Click to Mute)' : 'Click to Unmute Soundtrack'}
-          aria-label="Toggle audio"
-        >
-          <div className="signup-wave-bars">
-            <span className="signup-wave-bar" />
-            <span className="signup-wave-bar" />
-            <span className="signup-wave-bar" />
-          </div>
-          <span>{isAudioActive ? 'Audio Active' : 'Soundtrack On'}</span>
-        </button>
       </header>
 
       {/* Main Split Layout */}

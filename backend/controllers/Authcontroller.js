@@ -74,7 +74,16 @@ const login = async (req, res) => {
                 }, process.env.JWT, {
                     expiresIn: "7d"
                 });
-                return res.status(200).json({ message: "Here you go", token: `${token}` });
+                return res.status(200).json({
+                    message: "Here you go",
+                    token: `${token}`,
+                    name: user.name,
+                    user: {
+                        _id: user._id,
+                        name: user.name,
+                        email: user.email
+                    }
+                });
             }
         }
     }
