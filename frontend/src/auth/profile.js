@@ -1,5 +1,5 @@
 import { getToken } from './jwt';
-import API_BASE_URL from '..api/api';
+import API_BASE_URL from '../api/api';
 
 const API_URL = `${API_BASE_URL}/profile`;
 
