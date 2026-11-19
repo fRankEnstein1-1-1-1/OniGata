@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import homieVideo from './assets/homie.mp4';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -8,6 +8,8 @@ import ProfileSetup from './pages/ProfileSetup';
 import PhotoUpload from './pages/PhotoUpload';
 import Settings from './pages/Settings';
 import Checkin from './pages/Checkin';
+import ProtectedRoute from './components/ProtectedRoute';
+import PublicRoute from './components/PublicRoute';
 import './App.css';
 
 function Homie() {
@@ -644,54 +646,54 @@ function Homie() {
 
             {/* Inner Dark Glass Temple Plate Card */}
             <div className="homie-glass-card">
-                {/* Ritual Path Badge */}
-                <div className="homie-card-badge">
-                  <span className="homie-badge-indicator" />
-                  <span>FORGED IN SHADOW</span>
-                </div>
+              {/* Ritual Path Badge */}
+              <div className="homie-card-badge">
+                <span className="homie-badge-indicator" />
+                <span>FORGED IN SHADOW</span>
+              </div>
 
-                {/* Subtle Ceremonial Kanji Mark */}
-                <div className="homie-oni-mark" aria-hidden="true">
-                  <span className="homie-oni-line" />
-                  <span className="homie-oni-kanji">鬼</span>
-                  <span className="homie-oni-line" />
-                </div>
+              {/* Subtle Ceremonial Kanji Mark */}
+              <div className="homie-oni-mark" aria-hidden="true">
+                <span className="homie-oni-line" />
+                <span className="homie-oni-kanji">鬼</span>
+                <span className="homie-oni-line" />
+              </div>
 
-                {/* Main Title with Tighter Letter-Spacing on OniGata */}
-                <h1 className="homie-title">
-                  Welcome to <span className="homie-title-bold">OniGata</span>
-                </h1>
+              {/* Main Title with Tighter Letter-Spacing on OniGata */}
+              <h1 className="homie-title">
+                Welcome to <span className="homie-title-bold">OniGata</span>
+              </h1>
 
-                {/* Disciplined Mantra Tagline */}
-                <p className="homie-subtitle">
-                  Unleash your inner beast
-                </p>
+              {/* Disciplined Mantra Tagline */}
+              <p className="homie-subtitle">
+                Unleash your inner beast
+              </p>
 
-                {/* Cold Luxury CTA Buttons with Crimson Underglow */}
-                <div className="homie-btn-group">
-                  <Link to="/signup" className="homie-btn homie-btn-primary">
-                    <span>Sign Up</span>
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <line x1="5" y1="12" x2="19" y2="12" />
-                      <polyline points="12 5 19 12 12 19" />
-                    </svg>
-                  </Link>
-                  <Link to="/login" className="homie-btn homie-btn-secondary">
-                    <span>Log In</span>
-                  </Link>
-                </div>
+              {/* Cold Luxury CTA Buttons with Crimson Underglow */}
+              <div className="homie-btn-group">
+                <Link to="/signup" className="homie-btn homie-btn-primary">
+                  <span>Sign Up</span>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
+                  </svg>
+                </Link>
+                <Link to="/login" className="homie-btn homie-btn-secondary">
+                  <span>Log In</span>
+                </Link>
               </div>
             </div>
-          </main>
+          </div>
+        </main>
 
         {/* Bottom Bar */}
         <footer className="homie-bottombar">
@@ -707,14 +709,21 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/profile-setup" element={<ProfileSetup />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/" element={<Homie />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/photo-upload" element={<PhotoUpload />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/check-in" element={<Checkin />} />
+        <Route element={<PublicRoute />}>
+          <Route path="/" element={<Homie />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+        </Route>
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/profile-setup" element={<ProfileSetup />} />
+          <Route path="/photo-upload" element={<PhotoUpload />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/check-in" element={<Checkin />} />
+        </Route>
+
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

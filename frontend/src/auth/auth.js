@@ -57,4 +57,7 @@ export const getMe = async () => {
 export const logout = () => {
   removeToken();
   localStorage.removeItem('user_name');
+  localStorage.removeItem('lastKnownTier');
+  localStorage.removeItem('lastPlanAt');
+  localStorage.removeItem('lastPhotoAt');
 };

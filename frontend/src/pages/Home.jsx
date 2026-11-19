@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { generatePlan, getCurrentPlan, toggleLog } from '../auth/workout';
-import { getMe } from '../auth/auth';
-import { Link } from 'react-router-dom';
+import { getMe, logout } from '../auth/auth';
+import { Link, useNavigate } from 'react-router-dom';
 import './Home.css';
 
 // 🔊 Sound effects
@@ -12,8 +12,9 @@ import submitSfx from '../assets/sounds/profile.mp3';
 import loadVid1 from '../assets/solo1.mp4';
 import loadVid2 from '../assets/vegeta1.mp4';
 import loadVid3 from '../assets/vegeta2.mp4';
+import loadVid4 from "../assets/load4.mp4";
 
-const LOADING_VIDEOS = [loadVid1, loadVid2, loadVid3];
+const LOADING_VIDEOS = [loadVid1, loadVid2, loadVid3, loadVid4];
 
 const MOTIVATIONAL_QUOTES = [
     'Discipline is the bridge between goals and accomplishment.',
@@ -35,6 +36,7 @@ const getOffsets = (n) => {
 };
 
 const Home = () => {
+    const navigate = useNavigate();
     const [plan, setPlan] = useState(null);
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -48,7 +50,7 @@ const Home = () => {
     const [welcomeFading, setWelcomeFading] = useState(false);
     const started = useRef(false);
     const videoRef = useRef(null);
-
+    const [isMuted, setIsMuted] = useState(true);
     const selectAudio = useRef(null);
     const submitAudio = useRef(null);
 
@@ -161,6 +163,12 @@ const Home = () => {
         setTimeout(() => setShowWelcome(false), 300);
     };
 
+    const handleLogout = () => {
+        playSelect();
+        logout();
+        navigate('/login', { replace: true });
+    };
+
     // Loading video: random start
     useEffect(() => {
         if (loading && LOADING_VIDEOS.length > 0) {
@@ -258,8 +266,10 @@ const Home = () => {
                     className="hm-loading-video"
                     src={LOADING_VIDEOS[currentVidIndex]}
                     autoPlay
+                    muted={isMuted}
                     playsInline
                     onEnded={handleVideoEnded}
+                    onClick={() => setIsMuted(prev => !prev)}
                 />
                 <div className="hm-loading-overlay">
                     <div className="hm-loading-vignette" />
@@ -344,9 +354,35 @@ const Home = () => {
                     <span className="hm-brand-sep" />
                     <span className="hm-brand-label">OniGata</span>
                 </Link>
-                <Link to="/settings" className="hm-settings-btn" onClick={playSelect}>
-                    Settings
-                </Link>
+                <div className="hm-topbar-actions">
+                    <Link to="/settings" className="hm-settings-btn" onClick={playSelect}>
+                        Settings
+                    </Link>
+                    <button
+                        type="button"
+                        className="hm-logout-btn"
+                        onClick={handleLogout}
+                        title="Log out of OniGata"
+                    >
+                        <svg
+                            width="13"
+                            height="13"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="hm-logout-icon"
+                            aria-hidden="true"
+                        >
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                            <polyline points="16 17 21 12 16 7" />
+                            <line x1="21" y1="12" x2="9" y2="12" />
+                        </svg>
+                        <span>Logout</span>
+                    </button>
+                </div>
             </header>
 
             <main className="hm-main">
