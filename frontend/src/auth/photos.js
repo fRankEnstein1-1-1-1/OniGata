@@ -1,5 +1,5 @@
 import API_BASE_URL from '../api/api';
-
+import { getToken } from './jwt';
 const API_URL = `${API_BASE_URL}/photos/upload`;
 
 export const uploadPhotos = async (front, side) => {
