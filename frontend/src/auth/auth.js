@@ -1,6 +1,8 @@
 import { setToken, removeToken, getToken } from './jwt';
 
-const API_URL = 'http://localhost:5000/api/auth';
+import API_BASE_URL from './api';
+
+const API_URL = `${API_BASE_URL}/auth`;
 
 export const login = async (email, password) => {
   const response = await fetch(`${API_URL}/login`, {

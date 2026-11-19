@@ -1,6 +1,6 @@
-import { getToken } from './jwt';
+import API_BASE_URL from './api';
 
-const API_URL = 'http://localhost:5000/api/workout';
+const API_URL = `${API_BASE_URL}/workout`;
 
 const headers = () => ({
     'Content-Type': 'application/json',

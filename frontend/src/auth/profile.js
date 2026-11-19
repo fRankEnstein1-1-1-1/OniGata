@@ -1,6 +1,7 @@
 import { getToken } from './jwt';
+import API_BASE_URL from './api';
 
-const API_URL = 'http://localhost:5000/api/profile';
+const API_URL = `${API_BASE_URL}/profile`;
 
 export const getProfile = async () => {
     const response = await fetch(`${API_URL}/get`, {
