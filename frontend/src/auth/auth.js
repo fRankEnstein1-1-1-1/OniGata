@@ -1,6 +1,6 @@
 import { setToken, removeToken, getToken } from './jwt';
 
-import API_BASE_URL from './api';
+import API_BASE_URL from '../api/api';
 
 const API_URL = `${API_BASE_URL}/auth`;
 
